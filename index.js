@@ -6,9 +6,9 @@ const PORT = process.env.PORT || 10000;
 app.get("/zdravotnickydenik", async (req, res) => {
   try {
     const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
-    });
+  headless: true,
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+});
 
     const page = await browser.newPage();
     await page.goto("https://www.zdravotnickydenik.cz/", { waitUntil: "networkidle2" });
