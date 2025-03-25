@@ -1,13 +1,14 @@
 {
   "name": "js-scraper-server",
   "version": "1.0.0",
-  "description": "Scraper pre JS weby",
+  "description": "JavaScript scraper for dynamic content",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "postinstall": "puppeteer install"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "puppeteer": "^21.3.8"
+    "puppeteer": "^22.8.2"
   }
 }
