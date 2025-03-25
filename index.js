@@ -3,21 +3,20 @@ const puppeteer = require("puppeteer");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Absolútna cesta k Chrome z Puppeteer cache v /tmp
-const chromePath = "/tmp/chromium/chrome/linux-127.0.6533.88/chrome-linux64/chrome";
+// Cesta ku Chrome v cache Renderu po inštalácii cez postinstall
+const chromePath = "/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome";
 
 app.get("/zdravotnickydenik", async (req, res) => {
   try {
     const browser = await puppeteer.launch({
       executablePath: chromePath,
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
 
     const page = await browser.newPage();
     await page.goto("https://www.zdravotnickydenik.cz/", { waitUntil: "networkidle2" });
 
-    // Cookie banner (ak existuje)
     try {
       await page.waitForSelector("#didomi-notice-agree-button", { timeout: 5000 });
       await page.click("#didomi-notice-agree-button");
@@ -35,12 +34,7 @@ app.get("/zdravotnickydenik", async (req, res) => {
 
     await browser.close();
     console.log(`✅ Našiel som ${articles.length} článkov`);
-
-    res.json({
-      source: "ZdravotnickyDenik.cz",
-      count: articles.length,
-      articles,
-    });
+    res.json({ source: "ZdravotnickyDenik.cz", count: articles.length, articles });
   } catch (err) {
     console.error("❌ Chyba pri scrapovaní", err);
     res.status(500).json({ error: "Chyba pri scrapovaní", detail: err.message });
