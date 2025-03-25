@@ -3,13 +3,9 @@ const puppeteer = require("puppeteer");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Cesta ku Chrome v cache Renderu po inštalácii cez postinstall
-const chromePath = "/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome";
-
 app.get("/zdravotnickydenik", async (req, res) => {
   try {
     const browser = await puppeteer.launch({
-      executablePath: chromePath,
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
@@ -21,7 +17,7 @@ app.get("/zdravotnickydenik", async (req, res) => {
       await page.waitForSelector("#didomi-notice-agree-button", { timeout: 5000 });
       await page.click("#didomi-notice-agree-button");
     } catch (e) {
-      console.log("✅ Cookie banner sa nezobrazil alebo už bol schválený.");
+      console.log("✅ Cookie banner nebol zobrazený alebo už schválený.");
     }
 
     const articles = await page.evaluate(() => {
@@ -34,7 +30,12 @@ app.get("/zdravotnickydenik", async (req, res) => {
 
     await browser.close();
     console.log(`✅ Našiel som ${articles.length} článkov`);
-    res.json({ source: "ZdravotnickyDenik.cz", count: articles.length, articles });
+
+    res.json({
+      source: "ZdravotnickyDenik.cz",
+      count: articles.length,
+      articles,
+    });
   } catch (err) {
     console.error("❌ Chyba pri scrapovaní", err);
     res.status(500).json({ error: "Chyba pri scrapovaní", detail: err.message });
